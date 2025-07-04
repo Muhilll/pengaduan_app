@@ -3,6 +3,8 @@ import 'package:penganduan_app/RiwayatLaporanUser.dart';
 import 'package:penganduan_app/notifikasi.dart';
 import 'penggunaHome.dart';
 
+int a=0;
+
 class ProfilUser extends StatefulWidget {
   final Map<String, dynamic>? userData;
   const ProfilUser({super.key, this.userData});
