@@ -65,26 +65,12 @@ class _LoginPageState extends State<LoginPage> {
     if (result['status'] == true) {
       final userData = result['user'];
       final role = userData['role'];
-
+      
       Widget nextPage;
-      switch (role) {
-        case 'AdminSuper':
-          nextPage = const AdminMenu();
-          break;
-        case 'AdminInfrastruktur':
-          nextPage = const AdminInfrastrukturMenu();
-          break;
-        case 'AdminPelayanan':
-          nextPage = const AdminPelayananMenu();
-          break;
-        case 'AdminKeamanan':
-          nextPage = const AdminKeamananMenu();
-          break;
-        case 'AdminLingkungan':
-          nextPage = const AdminLingkunganMenu();
-          break;
-        default:
+      if(role == 'Pengguna'){
           nextPage = HomeUser(userData: userData);
+      } else{
+          nextPage = AdminMenu(userData: userData);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(

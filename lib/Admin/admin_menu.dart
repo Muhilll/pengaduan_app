@@ -3,7 +3,8 @@ import 'package:penganduan_app/Admin/LaporanMasuk.dart';
 import 'package:penganduan_app/Admin/daftar_pengguna.dart';
 
 class AdminMenu extends StatefulWidget {
-  const AdminMenu({super.key});
+  final Map<String, dynamic>? userData;
+  const AdminMenu({this.userData, super.key});
 
   @override
   State<AdminMenu> createState() => _AdminMenuState();
@@ -11,17 +12,23 @@ class AdminMenu extends StatefulWidget {
 
 class _AdminMenuState extends State<AdminMenu> {
   int _selectedIndex = 0;
+  late List<Widget> _pages;
+  late String role;
 
-  final List<Widget> _pages = [
-    const _DashboardPage(),
-    const LaporanMasuk(),
-    const DaftarPengguna(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    role = widget.userData?['role'] ?? '';
+
+    _pages = [
+      const _DashboardPage(),
+      LaporanMasuk(role: role),
+      const DaftarPengguna(),
+    ];
+  }
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    setState(() => _selectedIndex = index);
   }
 
   @override
@@ -31,7 +38,6 @@ class _AdminMenuState extends State<AdminMenu> {
         title: const Text('Dashboard Admin'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
-        elevation: 0,
       ),
       body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
@@ -39,9 +45,7 @@ class _AdminMenuState extends State<AdminMenu> {
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Beranda',
-          ),
+              icon: Icon(Icons.dashboard), label: 'Beranda'),
           BottomNavigationBarItem(icon: Icon(Icons.report), label: 'Pengaduan'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Pengguna'),
         ],

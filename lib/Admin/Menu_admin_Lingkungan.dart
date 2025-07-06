@@ -3,7 +3,8 @@ import 'package:penganduan_app/Admin/Laporan_Lingkungan.dart';
 import 'package:penganduan_app/Admin/daftar_pengguna.dart';
 
 class AdminLingkunganMenu extends StatefulWidget {
-  const AdminLingkunganMenu({super.key});
+  final Map<String, dynamic>? userData;
+  const AdminLingkunganMenu({this.userData, super.key});
 
   @override
   State<AdminLingkunganMenu> createState() => _AdminMenuState();

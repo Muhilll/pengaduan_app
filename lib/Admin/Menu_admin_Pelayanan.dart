@@ -3,7 +3,8 @@ import 'package:penganduan_app/Admin/Laporan_Pelayanan.dart';
 import 'package:penganduan_app/Admin/daftar_pengguna.dart';
 
 class AdminPelayananMenu extends StatefulWidget {
-  const AdminPelayananMenu({super.key});
+  final Map<String, dynamic>? userData;
+  const AdminPelayananMenu({this.userData, super.key});
 
   @override
   State<AdminPelayananMenu> createState() => _AdminMenuState();

@@ -6,14 +6,15 @@ import 'package:penganduan_app/endPoint.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LaporanMasuk extends StatefulWidget {
-  const LaporanMasuk({super.key});
+  final String? role;
+  const LaporanMasuk({this.role, super.key});
 
   @override
   State<LaporanMasuk> createState() => _LaporanMasukState();
 }
 
 class _LaporanMasukState extends State<LaporanMasuk> {
-  List<Map<String, dynamic>> laporanList = [];
+  List<dynamic> laporanList = [];
 
   @override
   void initState() {
@@ -22,14 +23,17 @@ class _LaporanMasukState extends State<LaporanMasuk> {
   }
 
   Future<void> fetchLaporan() async {
-    final response =
-        await http.get(Uri.parse(EndPoint.url + 'get_pengaduan.php'));
+    final response = await http.post(
+      Uri.parse('${EndPoint.url}get_pengaduan.php'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'role': widget.role}),
+    );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
+    final result = jsonDecode(response.body);
+
+    if (result['status'] == true) {
       setState(() {
-        laporanList =
-            data.map((item) => Map<String, dynamic>.from(item)).toList();
+        laporanList = result['data'];
       });
     } else {
       // Error handling
@@ -100,7 +104,7 @@ Mohon tindak lanjutnya. Terima kasih.
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Laporan Masuk'),
+        title: Text(widget.role ?? 'ted'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
