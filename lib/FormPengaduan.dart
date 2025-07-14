@@ -168,8 +168,7 @@ class _BuatPengaduanPageState extends State<BuatPengaduanPage> {
   Future<void> _kirimPengaduan() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final uri =
-        Uri.parse(EndPoint.url + "pengaduan.php"); // Ganti dengan URL server-mu
+    final uri = Uri.parse(EndPoint.url + "pengaduan.php");
     final request = http.MultipartRequest('POST', uri);
 
     final id_user = widget.userData?["id"];
@@ -177,6 +176,7 @@ class _BuatPengaduanPageState extends State<BuatPengaduanPage> {
     if (id_user != null) {
       request.fields['id_user'] = id_user.toString();
     }
+
     request.fields['judul_pengaduan'] = _judulController.text;
     request.fields['kategori'] = _selectedKategori;
     request.fields['deskripsi'] = _deskripsiController.text;
@@ -187,7 +187,6 @@ class _BuatPengaduanPageState extends State<BuatPengaduanPage> {
     request.fields['tanggal'] =
         '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}';
 
-    // Tambah lampiran
     if (_selectedFile != null && _selectedFile!.path != null) {
       request.files.add(await http.MultipartFile.fromPath(
         'lampiran',
@@ -195,49 +194,51 @@ class _BuatPengaduanPageState extends State<BuatPengaduanPage> {
       ));
     }
 
-    // Tambah foto
     if (_imageFile != null) {
       request.files.add(await http.MultipartFile.fromPath(
         'foto',
         _imageFile!.path,
       ));
     }
+
     request.fields['is_anonim'] = _isAnonymous ? '1' : '0';
 
     try {
       final response = await request.send();
 
+      // Pastikan widget belum dispose sebelum lanjut
       if (!mounted) return;
 
-      if (response.statusCode == 200) {
-        final responseBody = await response.stream.bytesToString();
-        final data = json.decode(responseBody);
+      final responseBody = await response.stream.bytesToString();
 
-        if (!mounted) return;
+      if (!mounted) return;
 
-        if (data['status']) {
+      final data = json.decode(responseBody);
+
+      if (!mounted) return;
+
+      if (response.statusCode == 200 && data['status']) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
                 content: Text(data['message']), backgroundColor: Colors.green),
           );
-          Navigator.pop(context);
-        } else {
+          Navigator.pop(context); // hanya navigasi jika masih mounted
+        }
+      } else {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
                 content: Text(data['message']), backgroundColor: Colors.red),
           );
         }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Gagal mengirim pengaduan.'),
-              backgroundColor: Colors.red),
-        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 
