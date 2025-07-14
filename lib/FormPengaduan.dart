@@ -168,12 +168,13 @@ class _BuatPengaduanPageState extends State<BuatPengaduanPage> {
   Future<void> _kirimPengaduan() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final uri = Uri.parse(EndPoint.url+"pengaduan.php"); // Ganti dengan URL server-mu
+    final uri =
+        Uri.parse(EndPoint.url + "pengaduan.php"); // Ganti dengan URL server-mu
     final request = http.MultipartRequest('POST', uri);
 
     final id_user = widget.userData?["id"];
 
-    if(id_user != null){
+    if (id_user != null) {
       request.fields['id_user'] = id_user.toString();
     }
     request.fields['judul_pengaduan'] = _judulController.text;
@@ -206,9 +207,13 @@ class _BuatPengaduanPageState extends State<BuatPengaduanPage> {
     try {
       final response = await request.send();
 
+      if (!mounted) return;
+
       if (response.statusCode == 200) {
         final responseBody = await response.stream.bytesToString();
         final data = json.decode(responseBody);
+
+        if (!mounted) return;
 
         if (data['status']) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -554,8 +559,7 @@ class _BuatPengaduanPageState extends State<BuatPengaduanPage> {
                         ? [
                             // Opsi pengaduan anonim
                             SwitchListTile(
-                              title:
-                                   Text('Kirim sebagai pengaduan anonim'),
+                              title: Text('Kirim sebagai pengaduan anonim'),
                               subtitle: const Text(
                                 'Identitas Anda tidak akan ditampilkan',
                               ),
